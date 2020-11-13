@@ -14,7 +14,9 @@ const AddEmployeeModal: FC<AddModal> = (props) => {
     EmployeeDataService.create({
       firstname: faker.name.firstName(),
       lastname: faker.name.lastName(),
-      position: faker.name.jobTitle()
+      position: faker.name.jobTitle(),
+      phone: faker.phone.phoneNumber(),
+      email: faker.internet.email()
     })
     if (onCancel) onCancel(e)
 

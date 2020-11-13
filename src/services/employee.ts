@@ -7,9 +7,15 @@ export type Employee = {
   firstname: string;
   lastname: string;
   position: string;
+  phone?: string;
+  email?: string;
 };
 
 class EmployeeDataService {
+  getUser(id: string) {
+    return db.doc(id);
+  }
+
   getAll() {
     return db;
   }
@@ -23,7 +29,6 @@ class EmployeeDataService {
   }
 
   delete(id: string) {
-    console.log('id::', id);
     return db.doc(id).delete();
   }
 }

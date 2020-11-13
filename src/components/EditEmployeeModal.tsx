@@ -2,38 +2,40 @@ import React, { ChangeEvent, FC, MouseEvent, useEffect, useState } from 'react'
 import EmployeeDataService, { Employee } from '../services/employee'
 
 type EditModal = {
+  id?: string | null
   isOpen: boolean
   onCancel?: (event: MouseEvent<HTMLButtonElement>) => void
-  values: Employee | null
 }
 
 const EditEmployeeModal: FC<EditModal> = (props) => {
-  const { isOpen, onCancel, values } = props
-  console.log('values', values)
-  const [formState, setFormState] = useState<Employee | null>(null)
-  // setFormState(values)
-  console.log('formState', formState)
+  const { isOpen, onCancel, id } = props
+  // const [formState, setFormState] = useState<Employee | null>(null)
+  const [employee, setEmployee] = useState<Employee | null>(null)
 
   const handleTextChange = (event: ChangeEvent<HTMLInputElement>) => {
-    console.log('name::', event.target.name)
-    console.log('value::', event.target.value)
-    if (formState) setFormState({ ...formState, [event.target.name]: event.target.value })
+    if (employee) setEmployee({ ...employee, [event.target.name]: event.target.value })
   }
 
   const onUpdate = (e: MouseEvent<HTMLButtonElement>) => {
-    if (values?.id) {
-      EmployeeDataService.update(values?.id, {
-        firstname: formState?.firstname ?? '',
-        lastname: formState?.lastname ?? '',
-        position: formState?.position ?? ''
+    if (id) {
+      EmployeeDataService.update(id, {
+        firstname: employee?.firstname ?? '',
+        lastname: employee?.lastname ?? '',
+        position: employee?.position ?? '',
+        phone: employee?.phone ?? '',
+        email: employee?.email ?? ''
       })
       if (onCancel) onCancel(e)
     }
   }
 
   useEffect(() => {
-    setFormState(values)
-  }, [values])
+    if (id) {
+      EmployeeDataService.getUser(id ?? '').onSnapshot((snapshot) => {
+        setEmployee(snapshot.data() as Employee)
+      })
+    }
+  }, [id])
 
   return <>
     <div className={`fixed inset-0 overflow-y-auto ${isOpen ? 'block' : 'hidden'}`}>
@@ -58,17 +60,27 @@ const EditEmployeeModal: FC<EditModal> = (props) => {
                   <div className="">
                     <div className="mt-2">
                       <label htmlFor="first_name" className="block text-sm font-medium leading-5 text-gray-700">First name</label>
-                      <input id="first_name" name="firstname" className="mt-1 form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" onChange={handleTextChange} value={formState?.firstname} />
+                      <input id="first_name" name="firstname" className="mt-1 form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" onChange={handleTextChange} value={employee?.firstname} />
                     </div>
 
                     <div className="mt-2">
                       <label htmlFor="last_name" className="block text-sm font-medium leading-5 text-gray-700">Last name</label>
-                      <input id="last_name" name="lastname" className="mt-1 form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" onChange={handleTextChange} value={formState?.lastname} />
+                      <input id="last_name" name="lastname" className="mt-1 form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" onChange={handleTextChange} value={employee?.lastname} />
                     </div>
 
                     <div className="mt-2">
-                      <label htmlFor="position" className="block text-sm font-medium leading-5 text-gray-700">Email address</label>
-                      <input id="position" name="position" className="mt-1 form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" onChange={handleTextChange} value={formState?.position} />
+                      <label htmlFor="position" className="block text-sm font-medium leading-5 text-gray-700">Position</label>
+                      <input id="position" name="position" className="mt-1 form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" onChange={handleTextChange} value={employee?.position} />
+                    </div>
+
+                    <div className="mt-2">
+                      <label htmlFor="phone" className="block text-sm font-medium leading-5 text-gray-700">Phone</label>
+                      <input id="phone" name="phone" className="mt-1 form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" onChange={handleTextChange} value={employee?.phone} />
+                    </div>
+
+                    <div className="mt-2">
+                      <label htmlFor="email" className="block text-sm font-medium leading-5 text-gray-700">Email address</label>
+                      <input id="email" name="email" className="mt-1 form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" onChange={handleTextChange} value={employee?.email} />
                     </div>
                   </div>
                 </div>
